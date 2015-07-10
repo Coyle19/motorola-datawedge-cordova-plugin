@@ -111,15 +111,26 @@ public class MotorolaDatawedgePlugin extends CordovaPlugin {
             //try to read intent action from inbound params
             String intentAction = null;
             if (args.length() > 0) {
-                intentAction = args.getString(0);  
-            } 
+                intentAction = args.getString(0);
+            }
             if (intentAction != null && intentAction.length() > 0) {
                 Log.i(TAG, "Intent action length  " + intentAction.length());
 
                 wedge.setDataWedgeIntentAction(intentAction);
             }
+
+            String intentCategory = null;
+            if (args.length() > 1) {
+                intentCategory = args.getString(1);
+            }
+
+            if (intentCategory != null && intentCategory.length() > 0) {
+                Log.i(TAG, "Intent action length: " + intentCategory.length());
+                wedge.setDataWedgeIntentCategory(intentCategory);
+            }
+
             wedge.start();
-        } 
+        }
 
         return true;
     }
@@ -135,7 +146,7 @@ public class MotorolaDatawedgePlugin extends CordovaPlugin {
 
     @Override
     public void onNewIntent(Intent intent) {
-        
+
         Log.i(TAG, "Got inbound intent  " + intent.getAction());
         wedge.handleIntent(intent);
     }

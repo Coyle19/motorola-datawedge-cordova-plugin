@@ -12,15 +12,18 @@ function DataWedge() {
 
 /**
  * Turn on DataWedge (default profile) and listen for event.  Listens for hardward button events.
- * 
+ *
  * @param successCallback - Success function should expect a barcode to be passed in
- * @param intentAction - action to listen for.  This is what you configured in the DataWedge app.  
+ * @param intentAction - action to listen for.  This is what you configured in the DataWedge app.
  *       Defaults to: "com.bluefletch.motorola.datawedge.ACTION";
  */
-DataWedge.prototype.start = function (intentAction) {
+DataWedge.prototype.start = function (intentAction, intentCategory) {
     var args = [];
     if (intentAction) {
         args[0] = intentAction;
+    }
+    if (intentCategory) {
+        args[1] = intentCategory;
     }
     exec(null, null, 'MotorolaDataWedge', 'start', args);
 };
@@ -28,7 +31,7 @@ DataWedge.prototype.start = function (intentAction) {
  * Turn off DataWedge plugin
  */
 DataWedge.prototype.stop = function () {
-  
+
     exec(null, null, 'MotorolaDataWedge', 'stop', []);
 };
 
@@ -48,15 +51,15 @@ DataWedge.prototype.switchProfile = function (profileName) {
  * Register a callback for scan events.  This function will be called when barcdoes are read
  */
 DataWedge.prototype.registerForBarcode = function (callback) {
-    
+
     exec(callback, null, 'MotorolaDataWedge', 'scanner.register', []);
 };
 
 /**
- * De-register a callback for scan events.  
+ * De-register a callback for scan events.
  */
 DataWedge.prototype.unregisterBarcode = function () {
-    
+
     exec(null, null, 'MotorolaDataWedge', 'scanner.unregister', []);
 };
 
@@ -64,15 +67,15 @@ DataWedge.prototype.unregisterBarcode = function () {
  * Register a callback for magstripe reads
  */
 DataWedge.prototype.registerForMagstripe = function (callback) {
-    
+
     exec(callback, null, 'MotorolaDataWedge', 'magstripe.register', []);
 };
 
 /**
- * De-register a callback for magstripe events.  
+ * De-register a callback for magstripe events.
  */
 DataWedge.prototype.unregisterMagstripe = function () {
-    
+
     exec(null, null, 'MotorolaDataWedge', 'magstripe.unregister', []);
 };
 
@@ -80,7 +83,7 @@ DataWedge.prototype.unregisterMagstripe = function () {
  * Manually turn on barcode scanner
  */
 DataWedge.prototype.startScanner = function () {
-    
+
     exec(null, null, 'MotorolaDataWedge', 'scanner.softScanOn', []);
 };
 

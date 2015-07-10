@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class DataWedgeIntentHandler {
-    
+
     protected static Object stateLock = new Object();
     protected static boolean hasInitialized = false;
 
@@ -26,7 +26,10 @@ public class DataWedgeIntentHandler {
     protected Context applicationContext;
 
     protected static String DEFAULT_ACTION = "com.bluefletch.motorola.datawedge.ACTION";
+    protected static String DEFAULT_CATEGORY = "";
+
     protected String dataWedgeAction = DEFAULT_ACTION;
+    protected String dataWedgeCategory = DEFAULT_CATEGORY;
     /**
     * This function must be called with the intent Action as configured in the DataWedge Application
     **/
@@ -34,6 +37,12 @@ public class DataWedgeIntentHandler {
         Log.i(TAG, "Setting data wedge intent to " + action);
         if (action == null || "".equals(action)) return;
         this.dataWedgeAction = action;
+    }
+
+    public void setDataWedgeIntentCategory(String category) {
+        Log.i(TAG, "Setting data wedge intent category to " + category);
+        if (category == null || "".equals(category)) return;
+        this.dataWedgeCategory = category;
     }
 
     protected ScanCallback<BarcodeScan> scanCallback;
@@ -61,9 +70,17 @@ public class DataWedgeIntentHandler {
                 return;
             }
 
-            Log.i(TAG, "Register for Datawedge intent: " + dataWedgeAction);
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(dataWedgeAction);
 
-            applicationContext.registerReceiver(dataReceiver, new IntentFilter(dataWedgeAction));
+            // if I have a category set, use it.
+            if (! "".equals(dataWedgeCategory)) {
+                intentFilter.addCategory(dataWedgeCategory);
+            }
+
+            Log.i(TAG, "Register for Datawedge intent: [action] " + dataWedgeAction + ", [category] " + dataWedgeCategory);
+
+            applicationContext.registerReceiver(dataReceiver, intentFilter);
 
             enableScanner(true);
             hasInitialized = true;
@@ -99,7 +116,7 @@ public class DataWedgeIntentHandler {
 
     protected void enableScanner(boolean shouldEnable) {
         Intent enableIntent = new Intent("com.motorolasolutions.emdk.datawedge.api.ACTION_SCANNERINPUTPLUGIN");
-        enableIntent.putExtra("com.motorolasolutions.emdk.datawedge.api.EXTRA_PARAMETER", 
+        enableIntent.putExtra("com.motorolasolutions.emdk.datawedge.api.EXTRA_PARAMETER",
             shouldEnable ? "ENABLE_PLUGIN" : "DISABLE_PLUGIN");
 
         applicationContext.sendBroadcast(enableIntent);
@@ -108,7 +125,7 @@ public class DataWedgeIntentHandler {
     public void startScanning(boolean turnOn) {
         synchronized (stateLock) {
             Intent scanOnIntent = new Intent("com.motorolasolutions.emdk.datawedge.api.ACTION_SOFTSCANTRIGGER");
-            scanOnIntent.putExtra("com.motorolasolutions.emdk.datawedge.api.EXTRA_PARAMETER", 
+            scanOnIntent.putExtra("com.motorolasolutions.emdk.datawedge.api.EXTRA_PARAMETER",
                 turnOn ? "START_SCANNING" : "STOP_SCANNING");
 
             applicationContext.sendBroadcast(scanOnIntent);
